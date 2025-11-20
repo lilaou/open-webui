@@ -182,6 +182,16 @@
 		margin-right: 0 !important;
 	}
 
+	/* 隐藏侧边栏顶部的"新建聊天"按钮 */
+	.custom-home-container :global(#sidebar .sidebar a[href="/"]) {
+		display: none !important;
+	}
+
+	/* 隐藏侧边栏底部的用户头像图片 */
+	.custom-home-container :global(#sidebar > button > div.pb-1\.5 > div > button > div > img) {
+		display: none !important;
+	}
+
 	/* 响应式设计 */
 	@media (max-width: 768px) {
 		.custom-home-container :global(.quick-links-wrapper) {
