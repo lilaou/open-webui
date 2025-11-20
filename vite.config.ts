@@ -28,5 +28,16 @@ export default defineConfig({
 	},
 	esbuild: {
 		pure: process.env.ENV === 'dev' ? [] : ['console.log', 'console.debug', 'console.error']
+	},
+	server: {
+		port: 5177,  // 固定使用 5177 端口
+		proxy: {
+			'/api': {
+				target: 'http://localhost:8080',
+				changeOrigin: true,
+				secure: false,
+				ws: true
+			}
+		}
 	}
 });
