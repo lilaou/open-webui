@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount, onDestroy } from 'svelte';
+	import { onMount, onDestroy, tick } from 'svelte';
 	import { toast } from 'svelte-sonner';
 	import CustomChatWrapper from './components/CustomChatWrapper.svelte';
 	import Sidebar from '$lib/components/layout/Sidebar.svelte';
@@ -41,11 +41,16 @@
 			);
 			models.set(modelsList);
 			console.log('Loaded models:', modelsList.map(m => m.id));
+
+			// 等待 Svelte 的响应式更新完成，确保 store 的变更已经传播到所有订阅的组件
+			await tick();
+			console.log('Settings and models propagated to reactive components');
 		} catch (error) {
 			console.error('Failed to load user settings or models:', error);
 		}
 
 		// 标记设置已加载，允许渲染 Chat 组件
+		// 此时 settings 和 models store 的更新已经完成并传播
 		settingsLoaded = true;
 
 		// 处理URL错误参数（与原主页保持一致）
