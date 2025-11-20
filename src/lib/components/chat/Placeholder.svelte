@@ -140,7 +140,10 @@
 						class=" text-3xl @sm:text-3xl line-clamp-1 flex items-center"
 						in:fade={{ duration: 100 }}
 					>
-						{#if models[selectedModelIdx]?.name}
+						<!-- 在 custom-home 页面始终显示欢迎消息，不显示模型名 -->
+						{#if typeof window !== 'undefined' && window.location.pathname === '/custom-home'}
+							{$i18n.t('Hello, {{name}}', { name: $user?.name })}
+						{:else if models[selectedModelIdx]?.name}
 							<Tooltip
 								content={models[selectedModelIdx]?.name}
 								placement="top"
