@@ -1,0 +1,39 @@
+# 简化的 Open WebUI Dockerfile - 使用本地构建
+# 前提: 先在宿主机运行 npm run build
+
+FROM python:3.11-slim-bookworm
+
+WORKDIR /app/backend
+
+# 安装系统依赖
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    git build-essential pandoc gcc netcat-openbsd curl jq \
+    python3-dev \
+    ffmpeg libsm6 libxext6 \
+    && rm -rf /var/lib/apt/lists/*
+
+# 安装 Python 依赖
+COPY ./backend/requirements.txt ./requirements.txt
+RUN pip3 install --no-cache-dir uv && \
+    pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu --no-cache-dir && \
+    uv pip install --system -r requirements.txt --no-cache-dir && \
+    mkdir -p /app/backend/data && \
+    rm -rf /var/lib/apt/lists/*
+
+# 复制已构建的前端文件
+COPY ./build /app/build
+COPY ./CHANGELOG.md /app/CHANGELOG.md
+COPY ./package.json /app/package.json
+
+# 复制后端文件
+COPY ./backend .
+
+EXPOSE 8080
+
+HEALTHCHECK CMD curl --silent --fail http://localhost:${PORT:-8080}/health | jq -ne 'input.status == true' || exit 1
+
+ENV WEBUI_BUILD_VERSION=local-build
+ENV DOCKER=true
+
+CMD [ "bash", "start.sh"]
