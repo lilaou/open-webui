@@ -4,6 +4,7 @@
 	import CustomChatWrapper from './components/CustomChatWrapper.svelte';
 	import Sidebar from '$lib/components/layout/Sidebar.svelte';
 	import QuickLinks from './components/QuickLinks.svelte';
+	import LayoutToggleButton from './components/LayoutToggleButton.svelte';
 	import SettingsModal from '$lib/components/chat/SettingsModal.svelte';
 	import ChangelogModal from '$lib/components/ChangelogModal.svelte';
 	import { page } from '$app/stores';
@@ -13,6 +14,29 @@
 
 	let settingsLoaded = false;
 
+	// 布局模式状态管理
+	const LAYOUT_MODE_KEY = 'rianlon-custom-home-layout-mode';
+	let layoutMode: 'simple' | 'full' = 'simple'; // 默认为简洁模式
+
+	// 从 localStorage 加载布局偏好
+	function loadLayoutMode(): 'simple' | 'full' {
+		if (typeof window === 'undefined') return 'simple';
+		const saved = localStorage.getItem(LAYOUT_MODE_KEY);
+		return (saved === 'full' ? 'full' : 'simple') as 'simple' | 'full';
+	}
+
+	// 保存布局偏好到 localStorage
+	function saveLayoutMode(mode: 'simple' | 'full') {
+		if (typeof window === 'undefined') return;
+		localStorage.setItem(LAYOUT_MODE_KEY, mode);
+	}
+
+	// 切换布局模式
+	function toggleLayoutMode() {
+		layoutMode = layoutMode === 'simple' ? 'full' : 'simple';
+		saveLayoutMode(layoutMode);
+	}
+
 	// 响应式地检查当前是否应该显示快速链接
 	// 方法1：检查路径是否精确匹配 /custom-home
 	// 方法2：检查是否有活动的聊天 ID（chatId store）
@@ -20,9 +44,12 @@
 	$: showQuickLinks = $page.url.pathname === '/custom-home' && !$chatId;
 
 	onMount(async () => {
+		// 加载布局模式偏好
+		layoutMode = loadLayoutMode();
+
 		// 进入 custom-home 时设置 data-route 属性
 		document.body.setAttribute('data-route', 'custom-home');
-		console.log('Custom home mounted');
+		console.log('Custom home mounted, layout mode:', layoutMode);
 
 		// 加载用户设置和模型列表
 		try {
@@ -71,22 +98,29 @@
 <SettingsModal bind:show={$showSettings} />
 <ChangelogModal bind:show={$showChangelog} />
 
-<div class="custom-home-container with-custom-logo">
-	<!-- 左侧边栏 -->
-	<Sidebar />
+<!-- 布局切换按钮 (固定在右上角) -->
+<div class="layout-controls">
+	<LayoutToggleButton {layoutMode} onToggle={toggleLayoutMode} />
+</div>
+
+<div class="custom-home-container with-custom-logo" class:simple-mode={layoutMode === 'simple'}>
+	<!-- 左侧边栏 - 仅在完整模式下显示 -->
+	{#if layoutMode === 'full'}
+		<Sidebar />
+	{/if}
 
 	<!-- 主内容区域 -->
-	<div class="main-content {$showSidebar ? 'md:max-w-[calc(100%-260px)]' : ''}">
+	<div class="main-content" class:simple-mode-content={layoutMode === 'simple'} class:full-mode-content={layoutMode === 'full' && $showSidebar}>
 		{#if settingsLoaded}
 			<!-- 聊天界面 -->
 			<div class="chat-wrapper" class:with-quick-links={showQuickLinks}>
-				<CustomChatWrapper />
+				<CustomChatWrapper {layoutMode} />
 			</div>
 
 			<!-- 快速链接区域（在对话框下方） - 仅在 custom-home 首页且未进入聊天时显示 -->
 			{#if showQuickLinks}
 				<div class="quick-links-wrapper">
-					<QuickLinks />
+					<QuickLinks {layoutMode} />
 				</div>
 			{/if}
 		{:else}
@@ -99,12 +133,26 @@
 </div>
 
 <style>
+	/* 布局切换按钮容器 */
+	.layout-controls {
+		position: fixed;
+		top: 16px;
+		right: 16px;
+		z-index: 1001;
+	}
+
 	.custom-home-container {
 		width: 100%;
 		height: 100%;
 		display: flex;
 		flex-direction: row;
 		position: relative;
+		transition: padding-left 0.3s ease;
+	}
+
+	/* 简洁模式：移除侧边栏留白 */
+	.custom-home-container.simple-mode {
+		padding-left: 0 !important;
 	}
 
 	.main-content {
@@ -113,8 +161,20 @@
 		flex-direction: column;
 		position: relative;
 		min-width: 0;
-		transition: max-width 0.2s ease;
+		transition: max-width 0.3s ease;
 		overflow-y: auto; /* 允许垂直滚动 */
+	}
+
+	/* 简洁模式：内容居中 */
+	.main-content.simple-mode-content {
+		max-width: 900px;
+		margin: 0 auto;
+		padding: 0 24px;
+	}
+
+	/* 完整模式：保持原有宽度限制 */
+	.main-content.full-mode-content {
+		max-width: calc(100% - 260px);
 	}
 
 	.chat-wrapper {
@@ -189,6 +249,16 @@
 
 	/* 隐藏侧边栏底部的用户头像图片 */
 	.custom-home-container :global(#sidebar > button > div.pb-1\.5 > div > button > div > img) {
+		display: none !important;
+	}
+
+	/* 隐藏原始的 Suggestions 组件容器 */
+	.custom-home-container :global(.mx-auto.max-w-2xl.font-primary.mt-2) {
+		display: none !important;
+	}
+
+	/* 简洁模式：隐藏顶部的设置按钮区域 */
+	.custom-home-container.simple-mode :global(nav > div.flex.items-center.w-full > div.flex.max-w-full.w-full.mx-auto) {
 		display: none !important;
 	}
 

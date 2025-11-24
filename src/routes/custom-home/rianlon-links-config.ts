@@ -24,7 +24,7 @@ export const systemLinks: Link[] = [
 		id: 'oa',
 		title: 'OA',
 		url: 'https://oa.lal.link/',
-		icon: '🏢',
+		icon: 'https://oa.lal.link/favicon.ico',
 		isSystem: true
 	},
 	{
@@ -45,14 +45,14 @@ export const systemLinks: Link[] = [
 		id: 'nas',
 		title: 'NAS',
 		url: 'https://192.168.45.222:5001/',
-		icon: '📁',
+		icon: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='24' height='24'%3E%3Cpath fill='%23FFA000' d='M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z'/%3E%3C/svg%3E",
 		isSystem: true
 	},
 	{
 		id: 'teambition',
 		title: 'Teambition',
 		url: 'https://www.teambition.com/',
-		icon: '👥',
+		icon: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAASFBMVEVHcEwwq/oTnfcipPgMmfUNm/YyrfwSnPcZovglp/lGt/1Uvf5twvo/s/yQz/u33v1Muv43r/v////Z7v5Ctf0vq/pJuf5XwP+FeTlMAAAAGHRSTlMATJDF6P8Rov///////////////+n/lsUajDyuAAABKklEQVR4AX3KgZbDEBCF4UtCZ6gkNqLv/6Y71IamOfs5DsyPgdLTbMw8aYUb9mEGD4sLbS40RnY2X2Y7zM0t+/98KGZDsj5RWTMqTcU4bAWRhrB1zM4/C++9C7ysK1VWgkeZP9dlWVqxxfVHGBIPCYiJjXzt+/qutvBTLEYmBChmJgm64FrAxKygWXwGYS9H5EJjYkFjEJ0U+5O4mJCYD+a47mdgmMkYln9ZCXIKJvk7wloDecoS5cQxoBaMkNolyuYaUHtWCVN8O2S3oD3rMSHH7mjBIEN9BRyrULcCQteC/hEDgDy8W9BlCWxoXAuO0FmI7P6EZS+BO2VUqRcxuqXPE97s1jlxPix6ccfiZNPm5Ue2Py/JYpT9RcaF/UiyxQ2VX8n79MoK3S+ypCjWxh6gUgAAAABJRU5ErkJggg==',
 		isSystem: true
 	},
 	{

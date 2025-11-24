@@ -7,6 +7,12 @@
 		type Link
 	} from '../rianlon-links-config';
 
+	// 接收布局模式 prop
+	export let layoutMode: 'simple' | 'full' = 'simple';
+
+	// 简洁模式下需要隐藏的链接 ID
+	const HIDDEN_IN_SIMPLE_MODE = ['models', 'prompts', 'knowledge', 'tools'];
+
 	let userLinks: Link[] = [];
 	let allLinks: Link[] = [];
 	let showAddDialog = false;
@@ -21,6 +27,12 @@
 	function updateAllLinks() {
 		allLinks = [...systemLinks, ...userLinks];
 	}
+
+	// 根据布局模式过滤链接
+	$: visibleLinks =
+		layoutMode === 'simple'
+			? allLinks.filter((link) => !HIDDEN_IN_SIMPLE_MODE.includes(link.id))
+			: allLinks;
 
 	function saveUserLinks() {
 		saveToStorage(userLinks);
@@ -63,9 +75,15 @@
 
 <div class="welcome-links-section">
 	<div class="links-grid-inline">
-		{#each allLinks as link, i (link.id)}
+		{#each visibleLinks as link, i (link.id)}
 			<a href={link.url} class="link-card" style="--index: {i}">
-				<div class="link-icon">{link.icon}</div>
+				<div class="link-icon">
+					{#if link.icon.startsWith('data:image/') || link.icon.startsWith('http')}
+						<img src={link.icon} alt={link.title} style="width: 18px; height: 18px;" />
+					{:else}
+						{link.icon}
+					{/if}
+				</div>
 				<div class="link-title">{link.title}</div>
 				{#if !link.isSystem}
 					<button

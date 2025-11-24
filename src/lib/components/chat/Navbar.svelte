@@ -53,6 +53,11 @@
 	export let archiveChatHandler: (id: string) => void;
 	export let moveChatHandler: (id: string, folderId: string) => void;
 
+	// 跑马灯切换按钮相关 props (仅在 custom-home 页面使用)
+	export let showMarqueeToggle: boolean = false;
+	export let isMarqueeVisible: boolean = true;
+	export let toggleMarquee: () => void = () => {};
+
 	let closedBannerIds = [];
 
 	let showShareChatModal = false;
@@ -110,6 +115,31 @@
 
 				<div class="self-start flex flex-none items-center text-gray-600 dark:text-gray-400">
 					<!-- <div class="md:hidden flex self-center w-[1px] h-5 mx-2 bg-gray-300 dark:bg-stone-700" /> -->
+
+					<!-- 跑马灯切换按钮 (仅在 custom-home 页面显示) -->
+					{#if showMarqueeToggle}
+						<Tooltip content={isMarqueeVisible ? $i18n.t('隐藏建议') : $i18n.t('显示建议')}>
+							<button
+								class="flex cursor-pointer px-2 py-2 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-850 transition"
+								on:click={toggleMarquee}
+								title={isMarqueeVisible ? '隐藏建议' : '显示建议'}
+							>
+								<div class="m-auto self-center">
+									{#if isMarqueeVisible}
+										<!-- 向下箭头图标 (隐藏) -->
+										<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+											<polyline points="6 9 12 15 18 9"></polyline>
+										</svg>
+									{:else}
+										<!-- 向上箭头图标 (显示) -->
+										<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+											<polyline points="18 15 12 9 6 15"></polyline>
+										</svg>
+									{/if}
+								</div>
+							</button>
+						</Tooltip>
+					{/if}
 
 					{#if $user?.role === 'user' ? ($user?.permissions?.chat?.temporary ?? true) && !($user?.permissions?.chat?.temporary_enforced ?? false) : true}
 						{#if !chat?.id}

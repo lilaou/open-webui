@@ -99,6 +99,11 @@
 
 	export let chatIdProp = '';
 
+	// 跑马灯切换按钮相关 props (仅在 custom-home 页面使用)
+	export let showMarqueeToggle: boolean = false;
+	export let isMarqueeVisible: boolean = true;
+	export let toggleMarquee: () => void = () => {};
+
 	let loading = true;
 
 	const eventTarget = new EventTarget();
@@ -2439,6 +2444,9 @@
 						{initNewChat}
 						archiveChatHandler={() => {}}
 						{moveChatHandler}
+						{showMarqueeToggle}
+						{isMarqueeVisible}
+						{toggleMarquee}
 						onSaveTempChat={async () => {
 							try {
 								if (!history?.currentId || !Object.keys(history.messages).length) {

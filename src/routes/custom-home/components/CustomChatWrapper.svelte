@@ -3,11 +3,25 @@
 	import { Marquee } from '@selemondev/svelte-marquee';
 	// 注意：不导入 svelte-marquee 的全局 CSS，避免与 Tailwind 类名冲突
 	// import '@selemondev/svelte-marquee/dist/style.css';
-	import { onMount, tick } from 'svelte';
+	import { onMount, tick, afterUpdate } from 'svelte';
+
+	// 接收布局模式 prop
+	export let layoutMode: 'simple' | 'full' = 'simple';
 
 	let suggestions: string[] = [];
 	let marqueeComponent: any;
 	let targetContainer: HTMLElement | null = null;
+	let isMarqueeVisible: boolean = true; // 控制跑马灯显示/隐藏状态
+	let marqueeWrapperElement: HTMLElement | null = null;
+
+	// 响应式更新：简洁模式下强制隐藏跑马灯
+	$: effectiveMarqueeVisible = layoutMode === 'full' && isMarqueeVisible;
+
+	// 响应式更新：当 effectiveMarqueeVisible 改变时，更新 marquee wrapper 的显示状态
+	$: if (marqueeWrapperElement && effectiveMarqueeVisible !== undefined) {
+		marqueeWrapperElement.style.display = effectiveMarqueeVisible ? 'flex' : 'none';
+		console.log('Marquee visibility changed:', effectiveMarqueeVisible, 'layoutMode:', layoutMode);
+	}
 
 	onMount(() => {
 		// 延迟获取建议列表，确保 Chat 组件已渲染
@@ -38,8 +52,14 @@
 
 				// 如果找到容器且有建议，将跑马灯插入其中
 				if (targetContainer && marqueeWrapper && suggestions.length > 0) {
+					// 保存引用
+					marqueeWrapperElement = marqueeWrapper;
+
+					// 设置初始显示状态
+					marqueeWrapper.style.display = isMarqueeVisible ? 'flex' : 'none';
+
 					targetContainer.appendChild(marqueeWrapper);
-					console.log('Marquee appended to container');
+					console.log('Marquee appended to container, initial visibility:', isMarqueeVisible);
 				}
 			}, 200);
 		}, 500);
@@ -47,7 +67,11 @@
 </script>
 
 <div class="custom-chat-container">
-	<Chat />
+	<Chat
+		showMarqueeToggle={layoutMode === 'full' && suggestions.length > 0}
+		isMarqueeVisible={effectiveMarqueeVisible}
+		toggleMarquee={() => isMarqueeVisible = !isMarqueeVisible}
+	/>
 
 	{#if suggestions.length > 0}
 		<div class="marquee-wrapper">
@@ -144,19 +168,30 @@
 		display: flex !important;
 		align-items: center !important;
 		justify-content: center !important;
-		overflow: hidden !important;
+		overflow: visible !important; /* 改为 visible 以便看到内容 */
 	}
 
 	/* Marquee 包装器 */
 	.marquee-wrapper {
 		width: 100%;
 		max-width: 600px;
-		height: 100%;
-		min-height: 60px;
+		height: 160px; /* 固定高度，h-40 = 10rem = 160px */
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		overflow: hidden;
+		animation: slideDown 0.3s ease-out;
+	}
+
+	@keyframes slideDown {
+		from {
+			opacity: 0;
+			transform: translateY(-10px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
 	}
 
 	/* Marquee 内部容器 */
