@@ -22,6 +22,12 @@
 		settings.set({ ...$settings, models: selectedModels });
 		await updateUserSettings(localStorage.token, { ui: $settings });
 
+		// 同步到 localStorage.model（单个模型 ID 字符串）
+		if (selectedModels.length > 0) {
+			localStorage.setItem('model', selectedModels[0]);
+			console.log('✅ 已保存默认模型到 localStorage.model:', selectedModels[0]);
+		}
+
 		toast.success($i18n.t('Default model updated'));
 	};
 
