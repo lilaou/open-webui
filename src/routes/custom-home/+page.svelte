@@ -137,7 +137,7 @@
 	.layout-controls {
 		position: fixed;
 		top: 16px;
-		right: 80px;
+		right: 180px;
 		z-index: 1001;
 	}
 
