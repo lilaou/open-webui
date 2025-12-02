@@ -11,7 +11,10 @@
 	let suggestions: string[] = [];
 	let marqueeComponent: any;
 	let targetContainer: HTMLElement | null = null;
-	let isMarqueeVisible: boolean = true; // 控制跑马灯显示/隐藏状态
+	// 从 localStorage 读取跑马灯显示状态（默认隐藏）
+	let isMarqueeVisible: boolean = typeof window !== 'undefined'
+		? localStorage.getItem('marqueeVisible') === 'true'
+		: false;
 	let marqueeWrapperElement: HTMLElement | null = null;
 
 	// 响应式更新：简洁模式下强制隐藏跑马灯
@@ -70,7 +73,12 @@
 	<Chat
 		showMarqueeToggle={layoutMode === 'full' && suggestions.length > 0}
 		isMarqueeVisible={effectiveMarqueeVisible}
-		toggleMarquee={() => isMarqueeVisible = !isMarqueeVisible}
+		toggleMarquee={() => {
+			isMarqueeVisible = !isMarqueeVisible;
+			if (typeof window !== 'undefined') {
+				localStorage.setItem('marqueeVisible', isMarqueeVisible.toString());
+			}
+		}}
 	/>
 
 	{#if suggestions.length > 0}
