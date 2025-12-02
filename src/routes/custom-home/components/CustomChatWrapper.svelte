@@ -13,7 +13,7 @@
 	let targetContainer: HTMLElement | null = null;
 	// 从 localStorage 读取跑马灯显示状态（默认隐藏）
 	let isMarqueeVisible: boolean = typeof window !== 'undefined'
-		? localStorage.getItem('marqueeVisible') === 'true'
+		? (localStorage.getItem('marqueeVisible') === null ? false : localStorage.getItem('marqueeVisible') === 'true')
 		: false;
 	let marqueeWrapperElement: HTMLElement | null = null;
 
@@ -58,8 +58,8 @@
 					// 保存引用
 					marqueeWrapperElement = marqueeWrapper;
 
-					// 设置初始显示状态
-					marqueeWrapper.style.display = isMarqueeVisible ? 'flex' : 'none';
+					// 设置初始显示状态（使用 effectiveMarqueeVisible 而不是 isMarqueeVisible）
+					marqueeWrapper.style.display = effectiveMarqueeVisible ? 'flex' : 'none';
 
 					targetContainer.appendChild(marqueeWrapper);
 					console.log('Marquee appended to container, initial visibility:', isMarqueeVisible);

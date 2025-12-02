@@ -62,7 +62,7 @@
 
 	// 从 localStorage 读取跑马灯显示状态（默认隐藏）
 	let internalMarqueeVisible = typeof window !== 'undefined'
-		? localStorage.getItem('marqueeVisible') === 'true'
+		? (localStorage.getItem('marqueeVisible') === null ? false : localStorage.getItem('marqueeVisible') === 'true')
 		: false;
 
 	// 使用内部状态或外部传入的状态
