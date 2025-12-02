@@ -60,6 +60,28 @@
 
 	let closedBannerIds = [];
 
+	// 从 localStorage 读取跑马灯显示状态（默认隐藏）
+	let internalMarqueeVisible = typeof window !== 'undefined'
+		? localStorage.getItem('marqueeVisible') === 'true'
+		: false;
+
+	// 使用内部状态或外部传入的状态
+	$: effectiveMarqueeVisible = showMarqueeToggle ? isMarqueeVisible : internalMarqueeVisible;
+
+	// 切换跑马灯状态
+	const handleToggleMarquee = () => {
+		if (showMarqueeToggle) {
+			// 使用外部传入的切换函数
+			toggleMarquee();
+		} else {
+			// 使用内部状态
+			internalMarqueeVisible = !internalMarqueeVisible;
+			if (typeof window !== 'undefined') {
+				localStorage.setItem('marqueeVisible', internalMarqueeVisible.toString());
+			}
+		}
+	};
+
 	let showShareChatModal = false;
 	let showDownloadChatModal = false;
 </script>
@@ -116,22 +138,21 @@
 				<div class="self-start flex flex-none items-center text-gray-600 dark:text-gray-400">
 					<!-- <div class="md:hidden flex self-center w-[1px] h-5 mx-2 bg-gray-300 dark:bg-stone-700" /> -->
 
-					<!-- 跑马灯切换按钮 (仅在 custom-home 页面显示) -->
-					{#if showMarqueeToggle}
-						<Tooltip content={isMarqueeVisible ? $i18n.t('隐藏建议') : $i18n.t('显示建议')}>
-							<button
-								class="flex cursor-pointer px-2 py-2 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-850 transition"
-								on:click={toggleMarquee}
-								title={isMarqueeVisible ? '隐藏建议' : '显示建议'}
-							>
-								<div class="m-auto self-center">
-									{#if isMarqueeVisible}
-										<!-- 向下箭头图标 (隐藏) -->
-										<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-											<polyline points="6 9 12 15 18 9"></polyline>
-										</svg>
-									{:else}
-										<!-- 向上箭头图标 (显示) -->
+					<!-- 跑马灯切换按钮 -->
+					<Tooltip content={effectiveMarqueeVisible ? $i18n.t('隐藏建议') : $i18n.t('显示建议')}>
+						<button
+							class="flex cursor-pointer px-2 py-2 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-850 transition"
+							on:click={handleToggleMarquee}
+							title={effectiveMarqueeVisible ? '隐藏建议' : '显示建议'}
+						>
+							<div class="m-auto self-center">
+								{#if effectiveMarqueeVisible}
+									<!-- 向下箭头图标 (隐藏) -->
+									<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+										<polyline points="6 9 12 15 18 9"></polyline>
+									</svg>
+								{:else}
+									<!-- 向上箭头图标 (显示) -->
 										<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 											<polyline points="18 15 12 9 6 15"></polyline>
 										</svg>
@@ -139,7 +160,6 @@
 								</div>
 							</button>
 						</Tooltip>
-					{/if}
 
 					{#if $user?.role === 'user' ? ($user?.permissions?.chat?.temporary ?? true) && !($user?.permissions?.chat?.temporary_enforced ?? false) : true}
 						{#if !chat?.id}
@@ -286,7 +306,7 @@
 	{/if}
 
 	<div class="absolute top-[100%] left-0 right-0 h-fit">
-		{#if !history.currentId && !$chatId && ($banners.length > 0 || ($config?.license_metadata?.type ?? null) === 'trial' || (($config?.license_metadata?.seats ?? null) !== null && $config?.user_count > $config?.license_metadata?.seats))}
+		{#if effectiveMarqueeVisible && !history.currentId && !$chatId && ($banners.length > 0 || ($config?.license_metadata?.type ?? null) === 'trial' || (($config?.license_metadata?.seats ?? null) !== null && $config?.user_count > $config?.license_metadata?.seats))}
 			<div class=" w-full z-30">
 				<div class=" flex flex-col gap-1 w-full">
 					{#if ($config?.license_metadata?.type ?? null) === 'trial'}
