@@ -136,7 +136,7 @@
 	/* 布局切换按钮容器 */
 	.layout-controls {
 		position: fixed;
-		top: 16px;
+		top: 12px;
 		right: 180px;
 		z-index: 1001;
 	}
