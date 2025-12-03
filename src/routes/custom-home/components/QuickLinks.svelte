@@ -181,7 +181,7 @@
 		align-items: center;
 		gap: 8px;
 		padding: 6px 16px;
-		min-height: 36px;
+		min-height: 24px;
 		background: rgba(243, 244, 246, 0.6);
 		border: 1px solid rgba(209, 213, 219, 0.3);
 		border-radius: 18px;

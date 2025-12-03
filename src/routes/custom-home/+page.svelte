@@ -115,14 +115,15 @@
 			<!-- 聊天界面 -->
 			<div class="chat-wrapper" class:with-quick-links={showQuickLinks}>
 				<CustomChatWrapper {layoutMode} />
+				<!-- 快速链接区域（在对话框下方） - 仅在 custom-home 首页且未进入聊天时显示 -->
+				{#if showQuickLinks}
+					<div class="quick-links-wrapper">
+						<QuickLinks {layoutMode} />
+					</div>
+				{/if}
 			</div>
 
-			<!-- 快速链接区域（在对话框下方） - 仅在 custom-home 首页且未进入聊天时显示 -->
-			{#if showQuickLinks}
-				<div class="quick-links-wrapper">
-					<QuickLinks {layoutMode} />
-				</div>
-			{/if}
+			
 		{:else}
 			<!-- 加载中提示 -->
 			<div class="flex items-center justify-center h-full">
@@ -181,13 +182,13 @@
 		flex: 1 1 auto; /* 允许增长和收缩 */
 		display: flex;
 		flex-direction: column;
-		overflow: hidden; /* 防止内容溢出 */
+		/*overflow: hidden; *//* 防止内容溢出 */
 	}
 
 	/* 当显示快速链接时，限制聊天区域高度为快速链接留出空间 */
 	.chat-wrapper.with-quick-links {
 		min-height: 400px;
-		max-height: calc(100vh - 250px);
+		/*max-height: calc(100vh - 350px);  增加底部空间，防止被快速链接遮挡 */
 	}
 
 	/* ===== 快速链接区域样式 ===== */
@@ -262,10 +263,34 @@
 		display: none !important;
 	}
 
+	/* Chatbox 样式 - 与 browser-app 保持一致 */
+  /* 输入框背景透明 */
+  .custom-home-container :global(form textarea),
+  .custom-home-container :global(form input[type="text"]) {
+        background: transparent !important;
+  }
+
+  /* 输入框容器背景色 #F8F9FA */
+  .custom-home-container :global(#message-input-container) {
+        background-color: #F8F9FA !important;
+  }
 	/* 响应式设计 */
 	@media (max-width: 768px) {
 		.custom-home-container :global(.quick-links-wrapper) {
 			padding: 20px 12px;
 		}
+
+		/* 小屏幕上进一步减少聊天区域高度,为快速链接留出更多空间 */
+		/*.chat-wrapper.with-quick-links {
+			max-height: calc(100vh - 400px);
+		}*/
+	}
+
+	/* 更小的屏幕(移动设备) */
+	@media (max-width: 480px) {
+		/*.chat-wrapper.with-quick-links {
+			max-height: calc(100vh - 450px);
+			min-height: 300px;
+		}*/
 	}
 </style>

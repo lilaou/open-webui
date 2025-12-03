@@ -129,7 +129,7 @@
 	}
 
 	/* Marquee 组件需要的基础样式 - 限定在 custom-chat-container 内 */
-	.custom-chat-container :global(.flex) {
+	 :global(.flex) {
 		display: flex;
 	}
 
@@ -162,7 +162,7 @@
 	/* ===== 组件样式 ===== */
 	.custom-chat-container {
 		width: 100%;
-		height: 100%;
+		height: 60%;
 		position: relative;
 	}
 
