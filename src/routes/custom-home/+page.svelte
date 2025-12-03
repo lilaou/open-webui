@@ -149,6 +149,7 @@
 		flex-direction: row;
 		position: relative;
 		transition: padding-left 0.3s ease;
+		z-index: 99;
 	}
 
 	/* 简洁模式：移除侧边栏留白 */
